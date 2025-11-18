@@ -7,6 +7,8 @@
 .Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # Django
 *.log
@@ -15,10 +17,12 @@ local_settings.py
 db.sqlite3
 db.sqlite3-*
 db.sqlite3.*
+*.sqlite3
 
 # Archivos estáticos / media generados
 media/
 staticfiles/
+static/
 
 # Virtual Environments
 venv/
@@ -28,6 +32,7 @@ ENV/
 env.bak/
 venv.bak/
 pyvenv.cfg
+Pipfile.lock
 
 # IDEs / editors
 .vscode/
@@ -37,17 +42,28 @@ pyvenv.cfg
 *.swp
 *.swo
 *~
+*.tmp
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+*.stackdump
 
 # Environment variables and secrets
 .env
 .env.*
+.env.local
+.env.production
+.env.staging
 credentials.json
 secrets.json
 *.secret
+config/secrets.json
 
 # Firebase / Google Cloud service account keys
 smart365-88674-firebase-adminsdk-fbsvc-4b783ba6cf.json
@@ -58,34 +74,51 @@ google-cloud-credentials.json
 *-credentials.json
 google*.json
 GOOGLE_APPLICATION_CREDENTIALS
+gcp-credentials.json
 
 # Tests / coverage
 .pytest_cache/
+.coverage
 coverage.xml
 htmlcov/
 nosetests.xml
+.tox/
+.cache
 
 # Packaging / build
 build/
 dist/
 *.egg-info/
 pip-wheel-metadata/
+.eggs/
 
 # Logs and runtime files
 logs/
 *.log
 *.pid
 celerybeat-schedule
+celerybeat.pid
 
-# Node
+# Node (si hay frontend integrado)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+yarn.lock
+
+# ML Models (versionar solo metadatos, no modelos pesados)
+ml_models/*.pkl
+ml_models/*.joblib
+ml_models/*.h5
+ml_models/*.pb
+!ml_models/models_metadata.json
 
 # Misc backups
 *.bak
+*.backup
+*.old
+*.orig
 
 # Documentación interna que no se versiona
 frontend_guides/
