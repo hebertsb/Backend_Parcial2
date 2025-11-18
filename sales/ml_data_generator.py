@@ -271,12 +271,31 @@ class SalesDataGenerator:
             except Exception:
                 pass
 
-    def _create_related_products(self, products: List[Product]):
-        """
-        Crea relaciones entre productos similares para recomendaciones.
-        Por ahora solo imprime las relaciones sugeridas.
-        """
-        print("✓ Configurando productos relacionados para recomendaciones:")
+    def _create_demo_payment_methods_if_needed(self) -> List[PaymentMethod]:
+        """Crea métodos de pago de demo si no existen."""
+        # Verificar si ya hay métodos de pago
+        existing_methods = list(PaymentMethod.objects.all())
+        if existing_methods:
+            return existing_methods
+        
+        # Crear métodos de pago básicos
+        payment_methods_data = [
+            {'name': 'Tarjeta de Crédito/Débito (Stripe)'},
+            {'name': 'Efectivo'},
+            {'name': 'Transferencia Bancaria'},
+        ]
+        
+        payment_methods = []
+        for method_data in payment_methods_data:
+            method, created = PaymentMethod.objects.get_or_create(
+                name=method_data['name'],
+                defaults={'is_active': True}
+            )
+            if created:
+                print(f"✓ Creado método de pago: {method.name}")
+            payment_methods.append(method)
+        
+        return payment_methods
 
         # Definir relaciones lógicas entre productos
         relations = [
@@ -506,6 +525,7 @@ class SalesDataGenerator:
         # Preparar datos
         products = self._create_demo_products_if_needed()
         customers = self._create_demo_customers_if_needed()
+        payment_methods = self._create_demo_payment_methods_if_needed()
 
         # Crear relaciones entre productos para recomendaciones
         self._create_related_products(products)
@@ -543,8 +563,15 @@ class SalesDataGenerator:
                 try:
                     # Usar un savepoint anidado para que errores puntuales no rompan la transacción global
                     with transaction.atomic():
+                        # Seleccionar método de pago (priorizando tarjeta para pruebas con Stripe)
+                        payment_method = random.choices(
+                            payment_methods,
+                            weights=[0.8, 0.1, 0.1]  # 80% tarjeta, 10% efectivo, 10% transferencia
+                        )[0]
+                        
                         order = Order.objects.create(
                             customer=customer,
+                            payment_method=payment_method,
                             total_price=order_total,
                             status='COMPLETED'
                         )
